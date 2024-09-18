@@ -1,0 +1,43 @@
+version: "3.8"
+
+services:
+  kafka:
+    image: "apache/kafka:3.8.0"
+    ports:
+      - 9092:9092
+    networks:
+      - kafka-networks
+
+  producer:
+    platform: linux/arm64
+    build:
+      context: "."
+      dockerfile: "./docker/producer/Dockerfile"
+    depends_on:
+      - "kafka"
+    tty: true
+    working_dir: "/app/producer"
+    volumes:
+      - type: "bind"
+        source: "./producer"
+        target: "/app/producer"
+    networks:
+      - kafka-networks
+
+  consumer:
+    build:
+      context: "."
+      dockerfile: "./docker/consumer/Dockerfile"
+    depends_on:
+      - "kafka"
+    tty: true
+    working_dir: "/app/consumer"
+    volumes:
+      - type: "bind"
+        source: "./consumer"
+        target: "/app/consumer"
+    networks:
+      - kafka-networks
+
+networks:
+  kafka-networks:
