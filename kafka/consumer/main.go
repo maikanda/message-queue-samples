@@ -33,6 +33,7 @@ func main() {
 		// Pollはconsumerが受け取ったメッセージ・イベントの双方を返す
 		event := consumer.Poll(12000)
 		switch e := event.(type) {
+		// AssignedPartitions, RevokedPartitionsはリバランス時のイベント。consumerとpartitionの関連付けが更新されるタイミングで発生する
 		case kafka.AssignedPartitions:
 			fmt.Printf("AssignedPartitions: %v\n", e)
 			err = consumer.Assign(e.Partitions)
