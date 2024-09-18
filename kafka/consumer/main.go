@@ -66,15 +66,6 @@ func main() {
 		default:
 			fmt.Printf("Event %v\n", event)
 		}
-		//if err == nil && msg != nil {
-		//	fmt.Printf("Message on %s: %s\n", msg.TopicPartition, string(msg.Value))
-		//} else {
-		//	// The client will automatically try to recover from all errors.
-		//	// Timeout is not considered an error because it is raised by
-		//	// ReadMessage in absence of messages.
-		//	fmt.Printf("Consumer error: %v (%v)\n", err, err.(kafka.Error))
-		//}
-		//time.Sleep(12 * time.Second)
 	}
 	consumer.Close()
 }
