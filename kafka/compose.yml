@@ -1,12 +1,13 @@
 version: "3.8"
 
+# kafkaコンテナへの接続は network_mode: host の場合のみサポートされている
 services:
   kafka:
     image: "apache/kafka:3.8.0"
     ports:
-      - 9092:9092
-    networks:
-      - kafka-networks
+      - "9092:9092"
+    network_mode: "host"
+    working_dir: "/opt/kafka/bin"
 
   producer:
     platform: linux/arm64
@@ -21,10 +22,10 @@ services:
       - type: "bind"
         source: "./producer"
         target: "/app/producer"
-    networks:
-      - kafka-networks
+    network_mode: "host"
 
   consumer:
+    platform: linux/amd64
     build:
       context: "."
       dockerfile: "./docker/consumer/Dockerfile"
@@ -36,8 +37,4 @@ services:
       - type: "bind"
         source: "./consumer"
         target: "/app/consumer"
-    networks:
-      - kafka-networks
-
-networks:
-  kafka-networks:
+    network_mode: "host"
