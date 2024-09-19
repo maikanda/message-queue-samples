@@ -1,0 +1,49 @@
+version: "3.8"
+networks:
+  pulsar:
+    driver: bridge
+
+services:
+  # Start broker
+  pulsar:
+    image: apachepulsar/pulsar:3.3.1
+    networks:
+      - pulsar
+    ports:
+      - "6650:6650"
+      - "8080:8080"
+    command: >
+      bin/pulsar standalone
+
+  producer:
+    platform: linux/arm64
+    build:
+      context: "."
+      dockerfile: "./docker/producer/Dockerfile"
+    depends_on:
+      - "pulsar"
+    tty: true
+    working_dir: "/app/producer"
+    networks:
+      - pulsar
+    volumes:
+      - type: "bind"
+        source: "./producer"
+        target: "/app/producer"
+
+  # armでは動かなかったのでamd指定
+  consumer:
+    platform: linux/amd64
+    build:
+      context: "."
+      dockerfile: "./docker/consumer/Dockerfile"
+    depends_on:
+      - "pulsar"
+    tty: true
+    working_dir: "/app/consumer"
+    networks:
+      - pulsar
+    volumes:
+      - type: "bind"
+        source: "./consumer"
+        target: "/app/consumer"
