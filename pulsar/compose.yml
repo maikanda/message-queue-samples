@@ -7,6 +7,7 @@ services:
   # Start broker
   pulsar:
     image: apachepulsar/pulsar:3.3.1
+    hostname: pulsar
     networks:
       - pulsar
     ports:
@@ -31,9 +32,8 @@ services:
         source: "./producer"
         target: "/app/producer"
 
-  # armでは動かなかったのでamd指定
   consumer:
-    platform: linux/amd64
+    platform: linux/arm64
     build:
       context: "."
       dockerfile: "./docker/consumer/Dockerfile"
@@ -47,3 +47,18 @@ services:
       - type: "bind"
         source: "./consumer"
         target: "/app/consumer"
+
+  pulsar-manage:
+    platform: linux/amd64
+    image: apachepulsar/pulsar-manager:v0.3.0
+    environment:
+      SPRING_CONFIGURATION_FILE: /pulsar-manager/pulsar-manager/application.properties
+      USERNAME: pulsar
+      PASSWORD: pulsar
+    networks:
+      - pulsar
+    depends_on:
+      - pulsar
+    ports:
+      - "9527:9527"
+      - "7750:7750"
