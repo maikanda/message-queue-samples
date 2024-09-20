@@ -25,7 +25,7 @@ services:
     network_mode: "host"
 
   consumer:
-    platform: linux/amd64
+    platform: linux/arm64
     build:
       context: "."
       dockerfile: "./docker/consumer/Dockerfile"
