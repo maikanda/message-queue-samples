@@ -1,3 +1,4 @@
 kafka/producer/target
 pulsar/producer/target
+nats/producer/target
 .idea/
