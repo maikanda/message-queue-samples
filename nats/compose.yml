@@ -1,0 +1,56 @@
+version: "3.8"
+networks:
+  nats:
+    driver: bridge
+
+services:
+  nats:
+    image: nats:2.10.20
+    hostname: nats
+    networks:
+      - nats
+    ports:
+      - "4222:4222"
+      - "8222:8222"
+      - "6222:6222"
+    command: >
+      -js
+
+  nats-box:
+    image: natsio/nats-box:0.14.5
+    tty: true
+    networks:
+      - nats
+
+
+  producer:
+    platform: linux/arm64
+    build:
+      context: "."
+      dockerfile: "./docker/producer/Dockerfile"
+    depends_on:
+      - "nats"
+    tty: true
+    working_dir: "/app/producer"
+    networks:
+      - nats
+    volumes:
+      - type: "bind"
+        source: "./producer"
+        target: "/app/producer"
+
+  consumer:
+    platform: linux/arm64
+    build:
+      context: "."
+      dockerfile: "./docker/consumer/Dockerfile"
+    depends_on:
+      - "nats"
+    tty: true
+    working_dir: "/app/consumer"
+    networks:
+      - nats
+    volumes:
+      - type: "bind"
+        source: "./consumer"
+        target: "/app/consumer"
