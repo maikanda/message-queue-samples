@@ -1,4 +1,4 @@
-module github.com/mailanda/message-queue-samples/kafka/consumer
+module github.com/mailanda/message-queue-samples/pulsar/consumer
 
 go 1.23.1
 
