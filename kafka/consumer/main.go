@@ -13,12 +13,12 @@ func main() {
 	stopChan := make(chan os.Signal, 1)
 	signal.Notify(stopChan, syscall.SIGINT, syscall.SIGTERM)
 
-	ctx, cancel := context.WithCancel(context.Background())
+	//ctx, cancel := context.WithCancel(context.Background())
 
 	// ConfigMapの詳細はこちら https://github.com/confluentinc/librdkafka/blob/master/CONFIGURATION.md
 	consumer1, err := kafka.NewConsumer(
 		&kafka.ConfigMap{
-			"bootstrap.servers":               "127.0.0.1:9092",
+			"bootstrap.servers":               "kafka:9092",
 			"group.id":                        "myGroup",
 			"go.application.rebalance.enable": true, // 再バランシングを有効化
 		},
@@ -28,17 +28,17 @@ func main() {
 		os.Exit(1)
 	}
 
-	consumer2, err := kafka.NewConsumer(
-		&kafka.ConfigMap{
-			"bootstrap.servers":               "127.0.0.1:9092",
-			"group.id":                        "myGroup",
-			"go.application.rebalance.enable": true, // 再バランシングを有効化
-		},
-	)
-	if err != nil {
-		fmt.Printf("Failed to create consumer: %s\n", err)
-		os.Exit(1)
-	}
+	//consumer2, err := kafka.NewConsumer(
+	//	&kafka.ConfigMap{
+	//		"bootstrap.servers":               "kafka:9092",
+	//		"group.id":                        "myGroup",
+	//		"go.application.rebalance.enable": true, // 再バランシングを有効化
+	//	},
+	//)
+	//if err != nil {
+	//	fmt.Printf("Failed to create consumer: %s\n", err)
+	//	os.Exit(1)
+	//}
 
 	err = consumer1.SubscribeTopics([]string{"test-topic"}, nil)
 	if err != nil {
@@ -47,27 +47,31 @@ func main() {
 		os.Exit(1)
 	}
 
-	err = consumer2.SubscribeTopics([]string{"test-topic"}, nil)
-	if err != nil {
-		fmt.Printf("Failed to subscribe to topic: %s\n", err)
-		consumer2.Close()
-		os.Exit(1)
-	}
+	//err = consumer2.SubscribeTopics([]string{"test-topic"}, nil)
+	//if err != nil {
+	//	fmt.Printf("Failed to subscribe to topic: %s\n", err)
+	//	consumer2.Close()
+	//	os.Exit(1)
+	//}
 
 	defer func() {
 		if err = consumer1.Close(); err != nil {
 			fmt.Printf("Failed to close consumer1: %s\n", err)
 		}
-		if err = consumer2.Close(); err != nil {
-			fmt.Printf("Failed to close consumer2: %s\n", err)
-		}
+		//if err = consumer2.Close(); err != nil {
+		//	fmt.Printf("Failed to close consumer2: %s\n", err)
+		//}
 	}()
 
-	go Consume(consumer1, ctx)
-	go Consume(consumer2, ctx)
+	for {
+		m, _ := consumer1.ReadMessage(10)
+		fmt.Printf("Message %v\n", m)
+	}
+	//go Consume(consumer1, ctx)
+	//go Consume(consumer2, ctx)
 
 	<-stopChan
-	cancel()
+	//cancel()
 }
 
 func Consume(consumer *kafka.Consumer, ctx context.Context) {

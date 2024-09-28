@@ -17,7 +17,7 @@ public class App {
         // Initialize Producer
         Properties config = new Properties();
         config.put("client.id", InetAddress.getLocalHost().getHostName());
-        config.put("bootstrap.servers", "127.0.0.1:9092");
+        config.put("bootstrap.servers", "kafka:9092");
         // https://kafka.apache.org/21/javadoc/org/apache/kafka/common/serialization/package-frame.html
         // Json serializer is not available
         config.put("key.serializer", IntegerSerializer.class.getName());
@@ -40,7 +40,7 @@ public class App {
                     record,
                     (metadata, e) -> System.out.printf("Message sent to topic: %s timestamp: %s topicPartition %s offset %s\n", metadata.topic(), metadata.timestamp(), metadata.partition(), metadata.offset())
                 );
-                Thread.sleep(10000);
+                Thread.sleep(1000);
             } catch (Exception e) {
                 System.out.println("Error: " + e);
                 producer.close();
